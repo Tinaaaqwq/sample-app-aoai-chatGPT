@@ -4,7 +4,7 @@ import Contoso from "../../assets/Contoso.svg";
 import { CopyRegular } from "@fluentui/react-icons";
 import { Dialog, Stack, TextField } from "@fluentui/react";
 import { useContext, useEffect, useState } from "react";
-import { HistoryButton, ShareButton } from "../../components/common/Button";
+import { HistoryButton, ShareButton, LoginButton } from "../../components/common/Button";
 import { AppStateContext } from "../../state/AppProvider";
 import { CosmosDBStatus } from "../../api";
 
@@ -17,6 +17,7 @@ const Layout = () => {
     const [showHistoryLabel, setShowHistoryLabel] = useState<string>("Show chat history");
     const appStateContext = useContext(AppStateContext)
     const ui = appStateContext?.state.frontendSettings?.ui;
+    const [isLoginPanelOpen, setIsLoginPanelOpen] = useState<boolean>(false);
 
     const handleShareClick = () => {
         setIsSharePanelOpen(true);
@@ -35,6 +36,14 @@ const Layout = () => {
 
     const handleHistoryClick = () => {
         appStateContext?.dispatch({ type: 'TOGGLE_CHAT_HISTORY' })
+    };
+
+    const handleLoginClick = () => {
+        setIsLoginPanelOpen(true);
+    };
+
+    const handleLoginPanelDismiss = () => {
+        setIsLoginPanelOpen(false);
     };
 
     useEffect(() => {
@@ -84,6 +93,7 @@ const Layout = () => {
                                 <HistoryButton onClick={handleHistoryClick} text={appStateContext?.state?.isChatHistoryOpen ? hideHistoryLabel : showHistoryLabel} />
                             }
                             <ShareButton onClick={handleShareClick} text={shareLabel} />
+                            <LoginButton onClick={handleLoginClick} />
                         </Stack>
                     }
                 </Stack>
@@ -126,6 +136,50 @@ const Layout = () => {
                         <span className={styles.copyButtonText}>{copyText}</span>
                     </div>
                 </Stack>
+            </Dialog>
+            <Dialog
+                onDismiss={handleLoginPanelDismiss}
+                hidden={!isLoginPanelOpen}
+                styles={{
+
+                    main: [{
+                        selectors: {
+                            ['@media (min-width: 480px)']: {
+                                maxWidth: '600px',
+                                background: "#FFFFFF",
+                                boxShadow: "0px 14px 28.8px rgba(0, 0, 0, 0.24), 0px 0px 8px rgba(0, 0, 0, 0.2)",
+                                borderRadius: "8px",
+                                maxHeight: '200px',
+                                minHeight: '100px',
+                            }
+                        }
+                    }]
+                }}
+                dialogContentProps={{
+                    title: "Login the web app",
+                    showCloseButton: true
+                }}
+            >
+                <Stack horizontal verticalAlign="center" style={{ gap: "8px" }}>
+                    <label >Email</label>
+                    <TextField className={styles.urlTextBox} /> 
+                    <br />   
+                    <label >Password</label>
+                    <TextField className={styles.urlTextBox} />
+                    <br />
+                    <div
+                        className={styles.copyButtonContainer}
+                        role="button"
+                        tabIndex={0}
+                        aria-label="Copy"
+                        onClick={handleCopyClick}
+                        onKeyDown={e => e.key === "Enter" || e.key === " " ? handleCopyClick() : null}
+                    >
+                        <CopyRegular className={styles.copyButton} />
+                        <span className={styles.copyButtonText}>Submit</span>
+                    </div>    
+                </Stack>
+                
             </Dialog>
         </div>
     );
