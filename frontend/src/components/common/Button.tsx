@@ -30,13 +30,13 @@ export const HistoryButton: React.FC<ButtonProps> = ({ onClick, text }) => {
   )
 }
 
-export const LoginButton: React.FC<ButtonProps> = ({onClick}) => {
+export const LoginButton: React.FC<ButtonProps> = ({onClick, text}) => {
     return (
       <CommandBarButton
               styles={styles.shareButtonRoot}
               iconProps={{ iconName: 'Contact' }}
               onClick={onClick}
-              text="Log In"
+              text={text}
       />
     )
 }

@@ -18,6 +18,7 @@ const Layout = () => {
     const appStateContext = useContext(AppStateContext)
     const ui = appStateContext?.state.frontendSettings?.ui;
     const [isLoginPanelOpen, setIsLoginPanelOpen] = useState<boolean>(false);
+    const [loginLabel, setloginLabel] = useState<string | undefined>("Log In");
 
     const handleShareClick = () => {
         setIsSharePanelOpen(true);
@@ -58,10 +59,12 @@ const Layout = () => {
         const handleResize = () => {
           if (window.innerWidth < 480) {
             setShareLabel(undefined)
+            setloginLabel(undefined)
             setHideHistoryLabel("Hide history")
             setShowHistoryLabel("Show history")
           } else {
             setShareLabel("Share")
+            setloginLabel("Log In")
             setHideHistoryLabel("Hide chat history")
             setShowHistoryLabel("Show chat history")
           }
@@ -93,7 +96,7 @@ const Layout = () => {
                                 <HistoryButton onClick={handleHistoryClick} text={appStateContext?.state?.isChatHistoryOpen ? hideHistoryLabel : showHistoryLabel} />
                             }
                             <ShareButton onClick={handleShareClick} text={shareLabel} />
-                            <LoginButton onClick={handleLoginClick} />
+                            <LoginButton onClick={handleLoginClick} text={loginLabel}/>
                         </Stack>
                     }
                 </Stack>
