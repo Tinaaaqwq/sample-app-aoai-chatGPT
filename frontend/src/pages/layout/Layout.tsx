@@ -2,7 +2,7 @@ import { Outlet, Link } from "react-router-dom";
 import styles from "./Layout.module.css";
 import Contoso from "../../assets/Contoso.svg";
 import { CopyRegular } from "@fluentui/react-icons";
-import { Dialog, Stack, TextField } from "@fluentui/react";
+import { Dialog, Stack, TextField, PrimaryButton} from "@fluentui/react";
 import { useContext, useEffect, useState } from "react";
 import { HistoryButton, ShareButton, LoginButton } from "../../components/common/Button";
 import { AppStateContext } from "../../state/AppProvider";
@@ -166,10 +166,10 @@ const Layout = () => {
                 <Stack horizontal verticalAlign="center" style={{ gap: "8px" }}>
                     <form action="/user/signup" method ="post">
                     <label >Email</label>
-                    <TextField className={styles.urlTextBox} name ="email"/> 
+                    <TextField className={styles.urlTextBox} /> 
                     <label >Password</label>
-                    <TextField className={styles.urlTextBox} name= "password"/>
-                    <input type="submit" value="Submit">
+                    <TextField className={styles.urlTextBox} />
+                    <PrimaryButton type="submit" text="Submit" />
                     </form>
                 </Stack>
                 
