@@ -977,25 +977,20 @@ async def user_signup():
     request_json = await request.get_json()
     email = request_json.get('email', None)
     password = request_json.get("password", None)
-    try:
-        if not email:
-            return jsonify({"error": "email is required"}), 400
-        
-        if not password:
-            return jsonify({"error": "password is required"}), 400
-        
-        ##sign up the user in cosmos
-        signed_user, user_id = await cosmos_login_client.signup_user(email,password)
-        if signed_user:
-            login_user(AuthUser(user_id))
-            return jsonify({"message": f"Successfully signed up user with email {email}, {current_user.is_authenticated}"}), 200
-        else:
-            return jsonify({"error": f"Unable to sign up user with email {email}. It either does not exist or the user does not have access to it."}), 404
-        
-    except Exception as e:
-        logging.exception("Exception in /history/message_feedback")
-        return jsonify({"error": str(e)}), 500
-    return True
+    if not email:
+        return jsonify({"error": "email is required"}), 400
+    
+    if not password:
+        return jsonify({"error": "password is required"}), 400
+    
+    ##sign up the user in cosmos
+    signed_user, user_id = await cosmos_login_client.signup_user(email,password)
+    if signed_user:
+        login_user(AuthUser(user_id))
+        return jsonify({"message": f"Successfully signed up user with email {email}, {current_user.is_authenticated}"}), 200
+    else:
+        return jsonify({"error": f"Unable to sign up user with email {email}. It either does not exist or the user does not have access to it."}), 404
+
 
 @bp.route("/user/login", methods=["POST"])
 async def user_login():
