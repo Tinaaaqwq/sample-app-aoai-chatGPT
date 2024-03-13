@@ -14,6 +14,7 @@ from quart import (
     send_from_directory,
     render_template
 )
+from quart_auth import AuthUser, login_user, logout_user
 
 from openai import AsyncAzureOpenAI
 from azure.identity.aio import DefaultAzureCredential, get_bearer_token_provider
@@ -941,9 +942,14 @@ async def ensure_cosmos():
             return jsonify({"error": "CosmosDB is not working"}), 500
 
 
+@bp.route("/user/signup", methods=["POST"])
+async def user_signup():
+    return True
+
 @bp.route("/user/login", methods=["POST"])
 async def user_login():
     return True
+
 
 async def generate_title(conversation_messages):
     ## make sure the messages are sorted by _ts descending

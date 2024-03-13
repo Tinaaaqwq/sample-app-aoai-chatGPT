@@ -1,5 +1,7 @@
 from azure.cosmos.aio import CosmosClient
 from azure.cosmos import exceptions
+from datetime import datetime
+import uuid
 
 class CosmosLoginClient():
 
@@ -26,3 +28,22 @@ class CosmosLoginClient():
             self.container_client = self.database_client.get_container_client(container_name)
         except exceptions.CosmosResourceNotFoundError:
             raise ValueError("Invalid CosmosDB container name") 
+    
+    def signup_user(self, email, password):
+        user = {
+            'id': str(uuid.uuid4()),  
+            'type': 'user',
+            'createdAt': datetime.utcnow().isoformat(),  
+            'updatedAt': datetime.utcnow().isoformat(),  
+            'userId': uuid.uuid3(uuid.NAMESPACE_DNS, 'python.org'),
+            'email':email,
+            'password':password
+        }
+        ## TODO: add some error handling based on the output of the upsert_item call
+        resp = self.container_client.upsert_item(user)  
+        if resp:
+            return resp
+        else:
+            return False
+        
+    
