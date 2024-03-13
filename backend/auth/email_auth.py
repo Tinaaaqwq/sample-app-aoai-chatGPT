@@ -30,19 +30,20 @@ class CosmosLoginClient():
             raise ValueError("Invalid CosmosDB container name") 
     
     def signup_user(self, email, password):
+        user_id = uuid.uuid3(uuid.NAMESPACE_DNS, email)
         user = {
             'id': str(uuid.uuid4()),  
             'type': 'user',
             'createdAt': datetime.utcnow().isoformat(),  
             'updatedAt': datetime.utcnow().isoformat(),  
-            'userId': uuid.uuid3(uuid.NAMESPACE_DNS, 'python.org'),
+            'userId': user_id,
             'email':email,
             'password':password
         }
         ## TODO: add some error handling based on the output of the upsert_item call
         resp = self.container_client.upsert_item(user)  
         if resp:
-            return resp
+            return resp, user_id
         else:
             return False
         

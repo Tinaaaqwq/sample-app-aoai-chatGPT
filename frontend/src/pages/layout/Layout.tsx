@@ -164,23 +164,13 @@ const Layout = () => {
                 }}
             >
                 <Stack horizontal verticalAlign="center" style={{ gap: "8px" }}>
+                    <form action="/user/signup" method ="post">
                     <label >Email</label>
-                    <TextField className={styles.urlTextBox} /> 
-                    <br />   
+                    <TextField className={styles.urlTextBox} name ="email"/> 
                     <label >Password</label>
-                    <TextField className={styles.urlTextBox} />
-                    <br />
-                    <div
-                        className={styles.copyButtonContainer}
-                        role="button"
-                        tabIndex={0}
-                        aria-label="Copy"
-                        onClick={handleCopyClick}
-                        onKeyDown={e => e.key === "Enter" || e.key === " " ? handleCopyClick() : null}
-                    >
-                        <CopyRegular className={styles.copyButton} />
-                        <span className={styles.copyButtonText}>Submit</span>
-                    </div>    
+                    <TextField className={styles.urlTextBox} name= "password"/>
+                    <input type="submit" value="Submit">
+                    </form>
                 </Stack>
                 
             </Dialog>

@@ -14,12 +14,13 @@ from quart import (
     send_from_directory,
     render_template
 )
-from quart_auth import AuthUser, login_user, logout_user
+from quart_auth import AuthUser, login_user, logout_user,current_user
 
 from openai import AsyncAzureOpenAI
 from azure.identity.aio import DefaultAzureCredential, get_bearer_token_provider
 from backend.auth.auth_utils import get_authenticated_user_details
 from backend.history.cosmosdbservice import CosmosConversationClient
+from backend.auth.email_auth import CosmosLoginClient
 
 from backend.utils import format_as_ndjson, format_stream_response, generateFilterString, parse_multi_columns, format_non_streaming_response
 
@@ -167,6 +168,9 @@ AZURE_MLINDEX_URL_COLUMN = os.environ.get("AZURE_MLINDEX_URL_COLUMN")
 AZURE_MLINDEX_VECTOR_COLUMNS = os.environ.get("AZURE_MLINDEX_VECTOR_COLUMNS")
 AZURE_MLINDEX_QUERY_TYPE = os.environ.get("AZURE_MLINDEX_QUERY_TYPE")
 
+#Email Password Login
+AZURE_COSMOSDB_LOGIN_DATABASE = os.environ.get("AZURE_COSMOSDB_LOGIN_DATABASE")
+AZURE_COSMOSDB_LOGIN_CONTAINER = os.environ.get("AZURE_COSMOSDB_LOGIN_CONTAINER")
 
 # Frontend Settings via Environment Variables
 AUTH_ENABLED = os.environ.get("AUTH_ENABLED", "true").lower() == "true"
@@ -293,6 +297,29 @@ def init_cosmosdb_client():
         
     return cosmos_conversation_client
 
+def init_login_client():
+    cosmos_login_client = None
+    try:
+        cosmos_endpoint = f'https://{AZURE_COSMOSDB_ACCOUNT}.documents.azure.com:443/'
+
+        if not AZURE_COSMOSDB_ACCOUNT_KEY:
+            credential = DefaultAzureCredential()
+        else:
+            credential = AZURE_COSMOSDB_ACCOUNT_KEY
+
+        cosmos_conversation_client = CosmosLoginClient(
+            cosmosdb_endpoint=cosmos_endpoint, 
+            credential=credential, 
+            database_name=AZURE_COSMOSDB_LOGIN_DATABASE,
+            container_name=AZURE_COSMOSDB_LOGIN_CONTAINER,
+            enable_message_feedback=AZURE_COSMOSDB_ENABLE_FEEDBACK
+        )
+    except Exception as e:
+        logging.exception("Exception in CosmosDB Login initialization", e)
+        cosmos_conversation_client = None
+        raise e
+        
+    return cosmos_conversation_client
 
 def get_configured_data_source():
     data_source = {}
@@ -944,6 +971,30 @@ async def ensure_cosmos():
 
 @bp.route("/user/signup", methods=["POST"])
 async def user_signup():
+    cosmos_login_client = init_login_client()
+
+    ## check request for message_id
+    request_json = await request.get_json()
+    email = request_json.get('email', None)
+    password = request_json.get("password", None)
+    try:
+        if not email:
+            return jsonify({"error": "email is required"}), 400
+        
+        if not password:
+            return jsonify({"error": "password is required"}), 400
+        
+        ##sign up the user in cosmos
+        signed_user, user_id = await cosmos_login_client.signup_user(email,password)
+        if signed_user:
+            login_user(AuthUser(user_id))
+            return jsonify({"message": f"Successfully signed up user with email {email}, {current_user.is_authenticated}"}), 200
+        else:
+            return jsonify({"error": f"Unable to sign up user with email {email}. It either does not exist or the user does not have access to it."}), 404
+        
+    except Exception as e:
+        logging.exception("Exception in /history/message_feedback")
+        return jsonify({"error": str(e)}), 500
     return True
 
 @bp.route("/user/login", methods=["POST"])
