@@ -46,6 +46,6 @@ class CosmosLoginClient():
         if resp:
             return resp, user_id
         else:
-            return False
+            return False, user_id
         
     
