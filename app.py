@@ -14,7 +14,7 @@ from quart import (
     send_from_directory,
     render_template
 )
-from quart_auth import AuthUser, login_user, logout_user,current_user
+from quart_auth import QuartAuth, AuthUser, login_user, logout_user,current_user
 
 from openai import AsyncAzureOpenAI
 from azure.identity.aio import DefaultAzureCredential, get_bearer_token_provider
@@ -35,10 +35,13 @@ UI_CHAT_DESCRIPTION = os.environ.get("UI_CHAT_DESCRIPTION") or "This chatbot is 
 UI_FAVICON = os.environ.get("UI_FAVICON") or "/pizza.ico"
 UI_SHOW_SHARE_BUTTON = os.environ.get("UI_SHOW_SHARE_BUTTON", "true").lower() == "true"
 
+auth_manager = QuartAuth()
+
 def create_app():
     app = Quart(__name__)
     app.register_blueprint(bp)
     app.config["TEMPLATES_AUTO_RELOAD"] = True
+    auth_manager.init_app(app)
     return app
 
 
@@ -988,11 +991,11 @@ async def user_signup():
             return jsonify({"error": "password is required"}), 400
         
         ##sign up the user in cosmos
-        signed_user = await cosmos_login_client.signup_user(email,password)
+        signed_user, user_id = await cosmos_login_client.signup_user(email,password)
         await cosmos_login_client.cosmosdb_client.close()
         if signed_user:
-            #login_user(AuthUser(user_id))
-            return jsonify({"message": f"Successfully signed up user with email {email}"}), 200
+            login_user(AuthUser(user_id))
+            return jsonify({"message": f"Successfully signed up user with email {email}, {current_user.is_authenticated}"}), 200
         else:
             return jsonify({"error": f"Unable to sign up user with email {email}. It either does not exist or the user does not have access to it."}), 404
     except Exception as e:
