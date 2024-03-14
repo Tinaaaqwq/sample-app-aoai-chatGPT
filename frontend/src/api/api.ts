@@ -339,3 +339,29 @@ export const historyMessageFeedback = async (messageId: string, feedback: string
     })
     return response;
 }
+
+export const userSignup= async (email: string, password: string) : Promise<Response> => {
+    const response = await fetch("/user/signup", {
+        method: "POST",
+        body: JSON.stringify({
+            email: email,
+            password: password
+        }),
+        headers: {
+            "Content-Type": "application/json"
+        },
+    })
+    .then((res) => {
+        return res
+    })
+    .catch((err) => {
+        console.error("There was an issue fetching your data.");
+        let errRes: Response = {
+            ...new Response,
+            ok: false,
+            status: 500,
+        }
+        return errRes;
+    })
+    return response;
+}

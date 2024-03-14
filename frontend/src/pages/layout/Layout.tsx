@@ -6,7 +6,7 @@ import { Dialog, Stack, TextField, PrimaryButton} from "@fluentui/react";
 import { useContext, useEffect, useState } from "react";
 import { HistoryButton, ShareButton, LoginButton } from "../../components/common/Button";
 import { AppStateContext } from "../../state/AppProvider";
-import { CosmosDBStatus } from "../../api";
+import { CosmosDBStatus, userSignup } from "../../api";
 
 const Layout = () => {
     const [isSharePanelOpen, setIsSharePanelOpen] = useState<boolean>(false);
@@ -19,6 +19,8 @@ const Layout = () => {
     const ui = appStateContext?.state.frontendSettings?.ui;
     const [isLoginPanelOpen, setIsLoginPanelOpen] = useState<boolean>(false);
     const [loginLabel, setloginLabel] = useState<string | undefined>("Log In");
+    const [newUserEmail, setnewUserEmail] = useState("");
+    const [newUserPassword, setnewUserPassword] = useState("");
 
     const handleShareClick = () => {
         setIsSharePanelOpen(true);
@@ -47,41 +49,15 @@ const Layout = () => {
         setIsLoginPanelOpen(false);
     };
 
-    const handleRegister = async (values: any) => {
-        alert(values)
-        console.log(values)
-        // e.preventDefault();
-        // if(errorRename || renameLoading){
-        //     return;
-        // }
-        // if(editTitle == item.title){
-        //     setErrorRename("Error: Enter a new title to proceed.")
-        //     setTimeout(() => {
-        //         setErrorRename(undefined);
-        //         setTextFieldFocused(true);
-        //         if (textFieldRef.current) {
-        //             textFieldRef.current.focus();
-        //         }
-        //     }, 5000);
-        //     return
-        // }
-        // setRenameLoading(true)
-        // let response = await historyRename(item.id, editTitle);
-        // if(!response.ok){
-        //     setErrorRename("Error: could not rename item")
-        //     setTimeout(() => {
-        //         setTextFieldFocused(true);
-        //         setErrorRename(undefined);
-        //         if (textFieldRef.current) {
-        //             textFieldRef.current.focus();
-        //         }
-        //     }, 5000);
-        // }else{
-        //     setRenameLoading(false)
-        //     setEdit(false)
-        //     appStateContext?.dispatch({ type: 'UPDATE_CHAT_TITLE', payload: { ...item, title: editTitle } as Conversation })
-        //     setEditTitle("");
-        // }
+    const handleRegister = async (e: any) => {
+        e.preventDefault();
+
+        let response = await userSignup(newUserEmail, newUserPassword);
+        if(!response.ok){
+            alert("not ok");
+        }else{
+            alert("ok");
+        }
     }
 
 
@@ -202,12 +178,12 @@ const Layout = () => {
                 }}
             >
                 <Stack horizontal verticalAlign="center" style={{ gap: "8px" }}>
-                    <form onSubmit={(values) => handleRegister(values)}>
+                    <form onSubmit={(e) => handleRegister(e)}>
                     <label >Email</label>
-                    <TextField className={styles.urlTextBox} name="email"/> 
+                    <TextField className={styles.urlTextBox} name="email" value={newUserEmail}/> 
                     <label >Password</label>
-                    <TextField className={styles.urlTextBox} name="password"/>
-                    <PrimaryButton text="Submit" onClick={(values) => handleRegister(values)} />
+                    <TextField className={styles.urlTextBox} name="password" value={newUserPassword}/>
+                    <PrimaryButton text="Submit" onClick={(e) => handleRegister(e)} />
                     </form>
                 </Stack>
                 
