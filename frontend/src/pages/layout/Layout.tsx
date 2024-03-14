@@ -207,7 +207,7 @@ const Layout = () => {
                     <TextField className={styles.urlTextBox} name="email"/> 
                     <label >Password</label>
                     <TextField className={styles.urlTextBox} name="password"/>
-                    <PrimaryButton type="submit" text="Submit" onClick={(values) => handleRegister(values)} />
+                    <PrimaryButton text="Submit" onClick={(values) => handleRegister(values)} />
                     </form>
                 </Stack>
                 
