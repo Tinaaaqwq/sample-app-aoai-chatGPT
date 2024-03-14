@@ -30,7 +30,7 @@ class CosmosLoginClient():
             raise ValueError("Invalid CosmosDB container name") 
     
     async def signup_user(self, email, password):
-        user_id = uuid.uuid3(uuid.NAMESPACE_DNS, email)
+        user_id = str(uuid.uuid3(uuid.NAMESPACE_DNS, email))
         # user_id ="test"
         user = {
             'id': str(uuid.uuid4()),  
