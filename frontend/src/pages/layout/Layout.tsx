@@ -47,6 +47,42 @@ const Layout = () => {
         setIsLoginPanelOpen(false);
     };
 
+    const handleRegister = async (e: any) => {
+        e.preventDefault();
+        if(errorRename || renameLoading){
+            return;
+        }
+        if(editTitle == item.title){
+            setErrorRename("Error: Enter a new title to proceed.")
+            setTimeout(() => {
+                setErrorRename(undefined);
+                setTextFieldFocused(true);
+                if (textFieldRef.current) {
+                    textFieldRef.current.focus();
+                }
+            }, 5000);
+            return
+        }
+        setRenameLoading(true)
+        let response = await historyRename(item.id, editTitle);
+        if(!response.ok){
+            setErrorRename("Error: could not rename item")
+            setTimeout(() => {
+                setTextFieldFocused(true);
+                setErrorRename(undefined);
+                if (textFieldRef.current) {
+                    textFieldRef.current.focus();
+                }
+            }, 5000);
+        }else{
+            setRenameLoading(false)
+            setEdit(false)
+            appStateContext?.dispatch({ type: 'UPDATE_CHAT_TITLE', payload: { ...item, title: editTitle } as Conversation })
+            setEditTitle("");
+        }
+    }
+
+
     useEffect(() => {
         if (copyClicked) {
             setCopyText("Copied URL");
@@ -164,7 +200,7 @@ const Layout = () => {
                 }}
             >
                 <Stack horizontal verticalAlign="center" style={{ gap: "8px" }}>
-                    <form action="/user/signup" method ="post">
+                    <form action="/user/signup" method ="post" onSubmit={(values) => alert(JSON.stringify(values, '', 4))}>
                     <label >Email</label>
                     <TextField className={styles.urlTextBox} name="email"/> 
                     <label >Password</label>
