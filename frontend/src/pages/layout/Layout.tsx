@@ -60,6 +60,13 @@ const Layout = () => {
         }
     }
 
+    const newUserEmailOnChange = (e: any) => {
+        setnewUserEmail(e.target.value);
+    };
+
+    const newUserPasswordOnChange = (e: any) => {
+        setnewUserEmail(e.target.value);
+    };
 
     useEffect(() => {
         if (copyClicked) {
@@ -180,9 +187,19 @@ const Layout = () => {
                 <Stack horizontal verticalAlign="center" style={{ gap: "8px" }}>
                     <form onSubmit={(e) => handleRegister(e)}>
                     <label >Email</label>
-                    <TextField className={styles.urlTextBox} name="email" value={newUserEmail}/> 
+                    <TextField 
+                        className={styles.urlTextBox} 
+                        name="email" 
+                        value={newUserEmail}
+                        onChange={newUserEmailOnChange}
+                    /> 
                     <label >Password</label>
-                    <TextField className={styles.urlTextBox} name="password" value={newUserPassword}/>
+                    <TextField 
+                        className={styles.urlTextBox} 
+                        name="password" 
+                        value={newUserPassword}
+                        onChange = {newUserPasswordOnChange}
+                    />
                     <PrimaryButton text="Submit" onClick={(e) => handleRegister(e)} />
                     </form>
                 </Stack>
