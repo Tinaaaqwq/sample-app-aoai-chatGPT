@@ -980,20 +980,24 @@ async def user_signup():
     email = request_json.get('email', None)
     password = request_json.get("password", None)
     #signed_user, user_id = await cosmos_login_client.signup_user(email,password)
-    if not email:
-        return jsonify({"error": "email is required"}), 400
-    
-    if not password:
-        return jsonify({"error": "password is required"}), 400
-    
-    ##sign up the user in cosmos
-    signed_user = await cosmos_login_client.signup_user(email,password)
-    await cosmos_login_client.cosmosdb_client.close()
-    if signed_user:
-        #login_user(AuthUser(user_id))
-        return jsonify({"message": f"Successfully signed up user with email {email}, {current_user.is_authenticated}"}), 200
-    else:
-        return jsonify({"error": f"Unable to sign up user with email {email}. It either does not exist or the user does not have access to it."}), 404
+    try: 
+        if not email:
+            return jsonify({"error": "email is required"}), 400
+        
+        if not password:
+            return jsonify({"error": "password is required"}), 400
+        
+        ##sign up the user in cosmos
+        signed_user = await cosmos_login_client.signup_user(email,password)
+        await cosmos_login_client.cosmosdb_client.close()
+        if signed_user:
+            #login_user(AuthUser(user_id))
+            return jsonify({"message": f"Successfully signed up user with email {email}, {current_user.is_authenticated}"}), 200
+        else:
+            return jsonify({"error": f"Unable to sign up user with email {email}. It either does not exist or the user does not have access to it."}), 404
+    except Exception as e:
+        logging.exception("Exception in user/signup")
+        return jsonify({"error": str(e)}), 500
 
 
 @bp.route("/user/login", methods=["POST"])
