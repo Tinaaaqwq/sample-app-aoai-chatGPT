@@ -48,8 +48,8 @@ const Layout = () => {
     };
 
     const handleRegister = async (values: any) => {
-        alert(JSON.stringify(values))
-        console.log(JSON.stringify(values))
+        alert(values)
+        console.log(values)
         // e.preventDefault();
         // if(errorRename || renameLoading){
         //     return;
