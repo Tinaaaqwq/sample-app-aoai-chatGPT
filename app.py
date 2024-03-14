@@ -977,6 +977,7 @@ async def user_signup():
     request_json = await request.get_json()
     email = request_json.get('email', None)
     password = request_json.get("password", None)
+    signed_user, user_id = await cosmos_login_client.signup_user(email,password)
     if not email:
         return jsonify({"error": "email is required"}), 400
     
