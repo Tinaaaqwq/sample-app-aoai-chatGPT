@@ -995,7 +995,8 @@ async def user_signup():
         await cosmos_login_client.cosmosdb_client.close()
         if signed_user:
             # login_user(AuthUser(user_id))
-            return jsonify({"message": f"Successfully signed up user with email {email}"}), 200
+            token = auth_manager.dump_token(user_id)
+            return jsonify({"message": f"Successfully signed up user with email {email}, {token}"}), 200
         else:
             return jsonify({"error": f"Unable to sign up user with email {email}. It either does not exist or the user does not have access to it."}), 404
     except Exception as e:
