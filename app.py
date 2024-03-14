@@ -310,7 +310,7 @@ def init_login_client():
         cosmos_conversation_client = CosmosLoginClient(
             cosmosdb_endpoint=cosmos_endpoint, 
             credential=credential, 
-            database_name=AZURE_COSMOSDB_LOGIN_DATABASE,
+            database_name=AZURE_COSMOSDB_DATABASE,
             container_name=AZURE_COSMOSDB_LOGIN_CONTAINER,
             enable_message_feedback=AZURE_COSMOSDB_ENABLE_FEEDBACK
         )
