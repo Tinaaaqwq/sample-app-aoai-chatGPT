@@ -987,7 +987,7 @@ async def user_signup():
         return jsonify({"error": "password is required"}), 400
     
     ##sign up the user in cosmos
-    signed_user, user_id = await cosmos_login_client.signup_user(email,password)
+    signed_user = await cosmos_login_client.signup_user(email,password)
     if signed_user:
         #login_user(AuthUser(user_id))
         return jsonify({"message": f"Successfully signed up user with email {email}, {current_user.is_authenticated}"}), 200

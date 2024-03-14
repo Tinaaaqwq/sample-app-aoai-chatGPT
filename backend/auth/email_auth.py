@@ -44,8 +44,8 @@ class CosmosLoginClient():
         ## TODO: add some error handling based on the output of the upsert_item call
         resp = await self.container_client.upsert_item(user)  
         if resp:
-            return resp, user_id
+            return resp
         else:
-            return False, user_id
+            return False
         
     
