@@ -107,40 +107,40 @@ export const ChatHistoryListItemCell: React.FC<ChatHistoryListItemCellProps> = (
 
     const truncatedTitle = (item?.title?.length > 28) ? `${item.title.substring(0, 28)} ...` : item.title;
 
-    const handleSaveEdit = async (e: any) => {
-        e.preventDefault();
-        if(errorRename || renameLoading){
-            return;
-        }
-        if(editTitle == item.title){
-            setErrorRename("Error: Enter a new title to proceed.")
-            setTimeout(() => {
-                setErrorRename(undefined);
-                setTextFieldFocused(true);
-                if (textFieldRef.current) {
-                    textFieldRef.current.focus();
-                }
-            }, 5000);
-            return
-        }
-        setRenameLoading(true)
-        let response = await historyRename(item.id, editTitle);
-        if(!response.ok){
-            setErrorRename("Error: could not rename item")
-            setTimeout(() => {
-                setTextFieldFocused(true);
-                setErrorRename(undefined);
-                if (textFieldRef.current) {
-                    textFieldRef.current.focus();
-                }
-            }, 5000);
-        }else{
-            setRenameLoading(false)
-            setEdit(false)
-            appStateContext?.dispatch({ type: 'UPDATE_CHAT_TITLE', payload: { ...item, title: editTitle } as Conversation })
-            setEditTitle("");
-        }
-    }
+    // const handleSaveEdit = async (e: any) => {
+    //     e.preventDefault();
+    //     if(errorRename || renameLoading){
+    //         return;
+    //     }
+    //     if(editTitle == item.title){
+    //         setErrorRename("Error: Enter a new title to proceed.")
+    //         setTimeout(() => {
+    //             setErrorRename(undefined);
+    //             setTextFieldFocused(true);
+    //             if (textFieldRef.current) {
+    //                 textFieldRef.current.focus();
+    //             }
+    //         }, 5000);
+    //         return
+    //     }
+    //     setRenameLoading(true)
+    //     let response = await historyRename(item.id, editTitle);
+    //     if(!response.ok){
+    //         setErrorRename("Error: could not rename item")
+    //         setTimeout(() => {
+    //             setTextFieldFocused(true);
+    //             setErrorRename(undefined);
+    //             if (textFieldRef.current) {
+    //                 textFieldRef.current.focus();
+    //             }
+    //         }, 5000);
+    //     }else{
+    //         setRenameLoading(false)
+    //         setEdit(false)
+    //         appStateContext?.dispatch({ type: 'UPDATE_CHAT_TITLE', payload: { ...item, title: editTitle } as Conversation })
+    //         setEditTitle("");
+    //     }
+    // }
 
     const chatHistoryTitleOnChange = (e: any) => {
         setEditTitle(e.target.value);
