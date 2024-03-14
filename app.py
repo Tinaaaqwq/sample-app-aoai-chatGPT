@@ -41,6 +41,7 @@ def create_app():
     app = Quart(__name__)
     app.register_blueprint(bp)
     app.config["TEMPLATES_AUTO_RELOAD"] = True
+    app.config["QUART_AUTH_MODE"] = "bearer"
     auth_manager.init_app(app)
     return app
 
@@ -995,7 +996,7 @@ async def user_signup():
         await cosmos_login_client.cosmosdb_client.close()
         if signed_user:
             # login_user(AuthUser(user_id))
-            token = auth_manager.dump_token("2")
+            token = auth_manager.dump_token(user_id)
             return jsonify({"message": f"Successfully signed up user with email {email}",
                             "token": token}), 200
         else:
