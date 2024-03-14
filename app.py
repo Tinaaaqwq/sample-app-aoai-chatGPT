@@ -972,12 +972,14 @@ async def ensure_cosmos():
 @bp.route("/user/signup", methods=["POST"])
 async def user_signup():
     cosmos_login_client = init_login_client()
+    if not cosmos_login_client:
+        raise Exception("CosmosDB is not configured or not working")
 
     ## check request for message_id
     request_json = await request.get_json()
     email = request_json.get('email', None)
     password = request_json.get("password", None)
-    signed_user, user_id = await cosmos_login_client.signup_user(email,password)
+    #signed_user, user_id = await cosmos_login_client.signup_user(email,password)
     if not email:
         return jsonify({"error": "email is required"}), 400
     
