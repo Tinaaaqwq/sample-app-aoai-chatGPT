@@ -200,7 +200,7 @@ const Layout = () => {
                 }}
             >
                 <Stack horizontal verticalAlign="center" style={{ gap: "8px" }}>
-                    <form action="/user/signup" method ="post" onSubmit={(values) => alert(JSON.stringify(values))}>
+                    <form onSubmit={(values) => alert(JSON.stringify(values))}>
                     <label >Email</label>
                     <TextField className={styles.urlTextBox} name="email"/> 
                     <label >Password</label>
