@@ -988,6 +988,7 @@ async def user_signup():
     
     ##sign up the user in cosmos
     signed_user = await cosmos_login_client.signup_user(email,password)
+    await cosmos_login_client.cosmosdb_client.close()
     if signed_user:
         #login_user(AuthUser(user_id))
         return jsonify({"message": f"Successfully signed up user with email {email}, {current_user.is_authenticated}"}), 200
