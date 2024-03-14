@@ -65,7 +65,7 @@ const Layout = () => {
     };
 
     const newUserPasswordOnChange = (e: any) => {
-        setnewUserEmail(e.target.value);
+        setnewUserPassword(e.target.value);
     };
 
     useEffect(() => {
