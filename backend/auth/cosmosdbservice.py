@@ -28,10 +28,29 @@ class CosmosLoginClient():
             self.container_client = self.database_client.get_container_client(container_name)
         except exceptions.CosmosResourceNotFoundError:
             raise ValueError("Invalid CosmosDB container name") 
+        
+    async def get_user(self, user_id):
+        parameters = [
+            {
+                'name': '@userId',
+                'value': user_id
+            }
+        ]
+        query = f"SELECT * FROM c where c.userId = @userId"
+        resp = self.container_client.query_items(query=query, parameters=parameters)
+
+        ## if no user are found, return None
+        if resp:
+            return resp
+        else:
+            return None
     
     async def signup_user(self, email, password):
         user_id = str(uuid.uuid3(uuid.NAMESPACE_DNS, email))
-        # user_id ="test"
+        exist = await self.get_user(user_id)
+        if exist != None:
+            return False, "user already existed"
+
         user = {
             'id': str(uuid.uuid4()),  
             'type': 'user',
@@ -47,5 +66,7 @@ class CosmosLoginClient():
             return resp, user_id
         else:
             return False, ""
+        
+    
         
     

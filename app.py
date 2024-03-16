@@ -1004,7 +1004,10 @@ async def user_signup():
             return jsonify({"message": f"Successfully signed up user with email {email}",
                             "user": email_user.user_id}), 200
         else:
-            return jsonify({"error": f"Unable to sign up user with email {email}. It either does not exist or the user does not have access to it."}), 404
+            if user_id == "user already existed":
+                return jsonify({"error": "user already existed"}), 400
+            else:
+                return jsonify({"error": f"Unable to sign up user with email {email}. It either does not exist or the user does not have access to it."}), 404
     except Exception as e:
         logging.exception("Exception in user/signup")
         return jsonify({"error": str(e)}), 500
