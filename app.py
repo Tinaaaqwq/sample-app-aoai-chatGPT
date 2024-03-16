@@ -39,7 +39,7 @@ UI_SHOW_SHARE_BUTTON = os.environ.get("UI_SHOW_SHARE_BUTTON", "true").lower() ==
 auth_manager = QuartAuth()
 
 #Set a global variable for user
-user = EmailUser("", False)
+email_user = EmailUser("", False)
 
 def create_app():
     app = Quart(__name__)
@@ -1000,9 +1000,9 @@ async def user_signup():
         await cosmos_login_client.cosmosdb_client.close()
         if signed_user:
             # login_user(AuthUser(user_id))
-            user = user.login(user_id, True)
+            email_user.login(user_id, True)
             return jsonify({"message": f"Successfully signed up user with email {email}",
-                            "user": user}), 200
+                            "user": email_user.user_id}), 200
         else:
             return jsonify({"error": f"Unable to sign up user with email {email}. It either does not exist or the user does not have access to it."}), 404
     except Exception as e:
