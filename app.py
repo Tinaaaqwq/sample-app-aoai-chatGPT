@@ -20,7 +20,8 @@ from openai import AsyncAzureOpenAI
 from azure.identity.aio import DefaultAzureCredential, get_bearer_token_provider
 from backend.auth.auth_utils import get_authenticated_user_details
 from backend.history.cosmosdbservice import CosmosConversationClient
-from backend.auth.email_auth import CosmosLoginClient
+from backend.auth.cosmosdbservice import CosmosLoginClient
+from backend.auth.email_user import EmailUser
 
 from backend.utils import format_as_ndjson, format_stream_response, generateFilterString, parse_multi_columns, format_non_streaming_response
 
@@ -37,7 +38,8 @@ UI_SHOW_SHARE_BUTTON = os.environ.get("UI_SHOW_SHARE_BUTTON", "true").lower() ==
 
 auth_manager = QuartAuth()
 
-user = ""
+#Set a global variable for user
+user = EmailUser("", False)
 
 def create_app():
     app = Quart(__name__)
@@ -313,7 +315,7 @@ def init_login_client():
         else:
             credential = AZURE_COSMOSDB_ACCOUNT_KEY
 
-        cosmos_conversation_client = CosmosLoginClient(
+        cosmos_login_client = CosmosLoginClient(
             cosmosdb_endpoint=cosmos_endpoint, 
             credential=credential, 
             database_name=AZURE_COSMOSDB_DATABASE,
@@ -322,10 +324,10 @@ def init_login_client():
         )
     except Exception as e:
         logging.exception("Exception in CosmosDB Login initialization", e)
-        cosmos_conversation_client = None
+        cosmos_login_client = None
         raise e
         
-    return cosmos_conversation_client
+    return cosmos_login_client
 
 def get_configured_data_source():
     data_source = {}
@@ -998,7 +1000,7 @@ async def user_signup():
         await cosmos_login_client.cosmosdb_client.close()
         if signed_user:
             # login_user(AuthUser(user_id))
-            user = user_id
+            user = user.login(user_id, True)
             return jsonify({"message": f"Successfully signed up user with email {email}",
                             "user": user}), 200
         else:
