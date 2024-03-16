@@ -197,6 +197,7 @@ const Layout = () => {
                     <TextField 
                         className={styles.urlTextBox} 
                         name="password" 
+                        type='password'
                         value={newUserPassword}
                         onChange = {newUserPasswordOnChange}
                     />

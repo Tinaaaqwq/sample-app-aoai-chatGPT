@@ -2,6 +2,7 @@ from azure.cosmos.aio import CosmosClient
 from azure.cosmos import exceptions
 from datetime import datetime
 import uuid
+import Crypto
 
 class CosmosLoginClient():
 
@@ -11,6 +12,7 @@ class CosmosLoginClient():
         self.database_name = database_name
         self.container_name = container_name
         self.enable_message_feedback = enable_message_feedback
+        self.hash_key = b'1234567890123456'
         try:
             self.cosmosdb_client = CosmosClient(self.cosmosdb_endpoint, credential=credential)
         except exceptions.CosmosHttpResponseError as e:
@@ -37,13 +39,15 @@ class CosmosLoginClient():
             }
         ]
         query = f"SELECT * FROM c where c.userId = @userId"
-        resp = self.container_client.query_items(query=query, parameters=parameters)
+        users = []
+        async for item in self.container_client.query_items(query=query, parameters=parameters):
+            users.append(item)
 
         ## if no user are found, return None
-        if resp:
-            return resp
-        else:
+        if len(users)==0:
             return None
+        else:
+            return users[0]
     
     async def signup_user(self, email, password):
         user_id = str(uuid.uuid3(uuid.NAMESPACE_DNS, email))
