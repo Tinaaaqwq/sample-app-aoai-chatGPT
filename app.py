@@ -15,6 +15,7 @@ from quart import (
     render_template
 )
 from quart_auth import QuartAuth, AuthUser, login_user, logout_user,current_user
+from verify-email import verify_email_async
 
 from openai import AsyncAzureOpenAI
 from azure.identity.aio import DefaultAzureCredential, get_bearer_token_provider
@@ -994,6 +995,10 @@ async def user_signup():
         
         if not password:
             return jsonify({"error": "password is required"}), 400
+        
+        email_verified = await verify_email_async(email)
+        if not email_verified:
+            return jsonify({"error": "email is not valid"}), 400
         
         ##sign up the user in cosmos
         signed_user, user_id = await cosmos_login_client.signup_user(email,password)
