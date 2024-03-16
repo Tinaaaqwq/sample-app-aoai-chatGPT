@@ -2,7 +2,6 @@ from azure.cosmos.aio import CosmosClient
 from azure.cosmos import exceptions
 from datetime import datetime
 import uuid
-import Crypto
 
 class CosmosLoginClient():
 
@@ -12,7 +11,6 @@ class CosmosLoginClient():
         self.database_name = database_name
         self.container_name = container_name
         self.enable_message_feedback = enable_message_feedback
-        self.hash_key = b'1234567890123456'
         try:
             self.cosmosdb_client = CosmosClient(self.cosmosdb_endpoint, credential=credential)
         except exceptions.CosmosHttpResponseError as e:
