@@ -7,6 +7,7 @@ import { useContext, useEffect, useState } from "react";
 import { HistoryButton, ShareButton, LoginButton } from "../../components/common/Button";
 import { AppStateContext } from "../../state/AppProvider";
 import { CosmosDBStatus, userSignup } from "../../api";
+import { AES } from "crypto-js/aes"
 
 const Layout = () => {
     const [isSharePanelOpen, setIsSharePanelOpen] = useState<boolean>(false);
