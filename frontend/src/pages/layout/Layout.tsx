@@ -7,7 +7,7 @@ import { useContext, useEffect, useState } from "react";
 import { HistoryButton, ShareButton, LoginButton } from "../../components/common/Button";
 import { AppStateContext } from "../../state/AppProvider";
 import { CosmosDBStatus, userSignup } from "../../api";
-import { AES } from "crypto-js/aes"
+import * as CryptoJS from 'crypto-js';
 
 const Layout = () => {
     const [isSharePanelOpen, setIsSharePanelOpen] = useState<boolean>(false);
@@ -52,7 +52,7 @@ const Layout = () => {
 
     const handleRegister = async (e: any) => {
         e.preventDefault();
-
+        
         let response = await userSignup(newUserEmail, newUserPassword);
         if(!response.ok){
             alert("not ok");
