@@ -1009,8 +1009,9 @@ async def user_signup():
         if signed_user:
             # Login the user
             session['user'] = user_id
+            test_session = session.get('user', 'not set')
             return jsonify({"message": f"Successfully signed up user with email {email}",
-                            "user": session.get('user', "session key 'user' not found")}), 200
+                            "user": test_session}), 200
         else:
             if user_id == "user already existed":
                 return jsonify({"error": "user already existed"}), 400
