@@ -50,7 +50,7 @@ def create_app():
     app.config["TEMPLATES_AUTO_RELOAD"] = True
     # app.config["QUART_AUTH_MODE"] = "bearer"
     # auth_manager.init_app(app)
-    app.config['SESSION_TYPE'] = 'redis'
+    app.config['SESSION_TYPE'] = 'mongodb'
     Session(app)
     return app
 
