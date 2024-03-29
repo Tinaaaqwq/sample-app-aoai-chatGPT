@@ -12,9 +12,11 @@ from quart import (
     make_response,
     request,
     send_from_directory,
-    render_template
+    render_template,
+    session
 )
 from quart_auth import QuartAuth, AuthUser, login_user, logout_user,current_user
+from quart_session import Session
 from verify_email import verify_email_async
 
 from openai import AsyncAzureOpenAI
@@ -37,7 +39,7 @@ UI_CHAT_DESCRIPTION = os.environ.get("UI_CHAT_DESCRIPTION") or "This chatbot is 
 UI_FAVICON = os.environ.get("UI_FAVICON") or "/pizza.ico"
 UI_SHOW_SHARE_BUTTON = os.environ.get("UI_SHOW_SHARE_BUTTON", "true").lower() == "true"
 
-auth_manager = QuartAuth()
+# auth_manager = QuartAuth()
 
 #Set a global variable for user
 email_user = EmailUser("", False)
@@ -46,8 +48,10 @@ def create_app():
     app = Quart(__name__)
     app.register_blueprint(bp)
     app.config["TEMPLATES_AUTO_RELOAD"] = True
-    app.config["QUART_AUTH_MODE"] = "bearer"
-    auth_manager.init_app(app)
+    # app.config["QUART_AUTH_MODE"] = "bearer"
+    # auth_manager.init_app(app)
+    app.config['SESSION_TYPE'] = 'redis'
+    Session(app)
     return app
 
 
