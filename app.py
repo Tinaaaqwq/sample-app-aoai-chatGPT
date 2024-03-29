@@ -1007,10 +1007,10 @@ async def user_signup():
         signed_user, user_id = await cosmos_login_client.signup_user(email,password)
         await cosmos_login_client.cosmosdb_client.close()
         if signed_user:
-            # login_user(AuthUser(user_id))
-            email_user.login(user_id, True)
+            # Login the user
+            session['user'] = user_id
             return jsonify({"message": f"Successfully signed up user with email {email}",
-                            "user": email_user.user_id}), 200
+                            "user": session.get('user', "session key 'user' not found")}), 200
         else:
             if user_id == "user already existed":
                 return jsonify({"error": "user already existed"}), 400
@@ -1023,6 +1023,8 @@ async def user_signup():
 
 @bp.route("/user/login", methods=["POST"])
 async def user_login():
+
+
 
     return True
 
