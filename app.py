@@ -51,6 +51,7 @@ def create_app():
     # app.config["QUART_AUTH_MODE"] = "bearer"
     # auth_manager.init_app(app)
     app.config['SESSION_TYPE'] = 'redis'
+    app.config['SESSION_URI'] = 'redis://:@localcode-1.azurewebsites.net:6379'
     return app
 
 
