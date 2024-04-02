@@ -39,22 +39,24 @@ UI_CHAT_TITLE = os.environ.get("UI_CHAT_TITLE") or "Start chatting"
 UI_CHAT_DESCRIPTION = os.environ.get("UI_CHAT_DESCRIPTION") or "This chatbot is configured to answer your questions test change"
 UI_FAVICON = os.environ.get("UI_FAVICON") or "/pizza.ico"
 UI_SHOW_SHARE_BUTTON = os.environ.get("UI_SHOW_SHARE_BUTTON", "true").lower() == "true"
-MONGO_SESSION_URI = os.environ.get("MONGO_SESSION_URI")
+SESSION_URI = os.environ.get("SESSION_URI")
 
 # auth_manager = QuartAuth()
 
 #Set a global variable for user
 email_user = EmailUser("", False)
 
-def create_app(MONGO_SESSION_URI):
+def create_app(SESSION_URI):
     app = Quart(__name__)
     app.register_blueprint(bp)
     app.config["TEMPLATES_AUTO_RELOAD"] = True
     # app.config["QUART_AUTH_MODE"] = "bearer"
     # auth_manager.init_app(app)
-    app.config['SESSION_TYPE'] = 'mongodb'
-    app.config['SESSION_MONGODB_URI'] = MONGO_SESSION_URI
-    app.config['SESSION_MONGODB_COLLECTION'] = 'sessions'
+    # app.config['SESSION_TYPE'] = 'mongodb'
+    # app.config['SESSION_MONGODB_URI'] = MONGO_SESSION_URI
+    # app.config['SESSION_MONGODB_COLLECTION'] = 'sessions'
+    app.config['SESSION_TYPE'] = 'redis'
+    app.config['SESSION_URI'] = SESSION_URI
     return app
 
 
@@ -1012,10 +1014,13 @@ async def user_signup():
         await cosmos_login_client.cosmosdb_client.close()
         if signed_user:
             # Login the user
-            session['user'] = 'test'
+            # session['user'] = 'test'
             session['user'] = user_id
             # test_session = session.get('user', 'not set')
-            return jsonify({"message": f"Successfully signed up user with email {email}"}), 200
+            return jsonify({
+                "message": f"Successfully signed up user with email {email}",
+                "user": session.get('user', 'not set')
+                            }), 200
         else:
             if user_id == "user already existed":
                 return jsonify({"error": "user already existed"}), 400
@@ -1056,5 +1061,5 @@ async def generate_title(conversation_messages):
         return messages[-2]['content']
 
 
-app = create_app(MONGO_SESSION_URI)
+app = create_app(SESSION_URI)
 Session(app)
