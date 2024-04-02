@@ -18,6 +18,7 @@ from quart import (
 from quart_auth import QuartAuth, AuthUser, login_user, logout_user,current_user
 from quart_session import Session
 from verify_email import verify_email_async
+import motor
 
 from openai import AsyncAzureOpenAI
 from azure.identity.aio import DefaultAzureCredential, get_bearer_token_provider

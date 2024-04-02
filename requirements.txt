@@ -14,3 +14,4 @@ gunicorn==20.1.0
 verify-email==2.4.3
 pycryptodome == 3.20.0
 redis>= 5.0.0
+motor==3.4.0
