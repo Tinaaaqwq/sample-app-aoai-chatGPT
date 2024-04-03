@@ -74,7 +74,9 @@ export const appStateReducer = (state: AppState, action: Action): AppState => {
                     ...state.feedbackState,
                     [action.payload.answerId]: action.payload.feedback,
                 },
-            };    
+            };
+        case 'SET_IS_LOGGED_IN':
+            return { ...state, isUserLoggedIn: action.payload };
         default:
             return state;
       }

@@ -1,4 +1,4 @@
-import { UserInfo, ConversationRequest, Conversation, ChatMessage, CosmosDBHealth, CosmosDBStatus } from "./models";
+import { UserInfo, ConversationRequest, Conversation, ChatMessage, CosmosDBHealth, CosmosDBStatus, EmailUser } from "./models";
 import { chatHistorySampleData } from "../constants/chatHistory";
 
 export async function conversationApi(options: ConversationRequest, abortSignal: AbortSignal): Promise<Response> {
@@ -362,6 +362,34 @@ export const userSignup= async (email: string, password: string) : Promise<Respo
             status: 500,
         }
         return errRes;
+    })
+    return response;
+}
+
+export const checkLoggedIn = async (): Promise<EmailUser> => {
+    const response = await fetch("/user/check", {
+        method: "GET",
+    })
+    .then(async res => {
+        let respJson = await res.json();
+        if(respJson.login){
+            return {
+                logged_in: true,
+                email: respJson.user_email
+            }
+        }else{
+            return {
+                logged_in: false,
+                email: ""
+            }
+        }
+    })
+    .catch((err) => {
+        console.error("There was an issue fetching your data.");
+        return {
+            logged_in: false,
+            email: ""
+        }
     })
     return response;
 }

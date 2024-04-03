@@ -1013,12 +1013,13 @@ async def user_signup():
         await cosmos_login_client.cosmosdb_client.close()
         if signed_user:
             # Login the user
-            session['user'] = user_id
             session['login'] = True
+            session['user_id'] = user_id
+            session['user_email'] = email
             # test_session = session.get('user', 'not set')
             return jsonify({
                 "message": f"Successfully signed up user with email {email}",
-                "user": session.get('user', 'not set')
+                "user": session.get('user_id', 'not set')
                             }), 200
         else:
             if user_id == "user already existed":
@@ -1036,6 +1037,14 @@ async def user_login():
 
 
     return True
+
+@bp.route("/user/check", methods=["GET"])
+async def user_check():
+
+    return jsonify({
+        "login": session.get('login', False),
+        "user_email": session.get('user_email', 'not set')
+                    }), 200
 
 
 async def generate_title(conversation_messages):

@@ -132,3 +132,7 @@ export enum Feedback {
     Manipulative = "manipulative",
     OtherHarmful = "other_harmlful"
 }
+export type EmailUser = {
+    logged_in: boolean,
+    email: string
+}

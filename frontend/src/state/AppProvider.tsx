@@ -1,6 +1,6 @@
 import React, { createContext, useReducer, ReactNode, useEffect } from 'react';
 import { appStateReducer } from './AppReducer';
-import { Conversation, ChatHistoryLoadingState, CosmosDBHealth, historyList, historyEnsure, CosmosDBStatus, frontendSettings, FrontendSettings, Feedback } from '../api';
+import { Conversation, ChatHistoryLoadingState, CosmosDBHealth, historyList, historyEnsure, CosmosDBStatus, frontendSettings, FrontendSettings, Feedback, EmailUser ,checkLoggedIn} from '../api';
   
 export interface AppState {
     isChatHistoryOpen: boolean;
@@ -11,6 +11,7 @@ export interface AppState {
     currentChat: Conversation | null;
     frontendSettings: FrontendSettings | null;
     feedbackState: { [answerId: string]: Feedback.Neutral | Feedback.Positive | Feedback.Negative; };
+    isUserLoggedIn: EmailUser ;
 }
 
 export type Action =
@@ -27,7 +28,8 @@ export type Action =
     | { type: 'FETCH_CHAT_HISTORY', payload: Conversation[] | null }  // API Call
     | { type: 'FETCH_FRONTEND_SETTINGS', payload: FrontendSettings | null }  // API Call
     | { type: 'SET_FEEDBACK_STATE'; payload: { answerId: string; feedback: Feedback.Positive | Feedback.Negative | Feedback.Neutral } }
-    | { type: 'GET_FEEDBACK_STATE'; payload: string };
+    | { type: 'GET_FEEDBACK_STATE'; payload: string }
+    | { type: 'SET_IS_LOGGED_IN'; payload: EmailUser };
 
 const initialState: AppState = {
     isChatHistoryOpen: false,
@@ -40,7 +42,11 @@ const initialState: AppState = {
         status: CosmosDBStatus.NotConfigured,
     },
     frontendSettings: null,
-    feedbackState: {}
+    feedbackState: {},
+    isUserLoggedIn: {
+        logged_in: false,
+        email: "",
+    }
 };
 
 export const AppStateContext = createContext<{
@@ -117,6 +123,19 @@ type AppStateProviderProps = {
         }
         getFrontendSettings();
     }, []);
+
+    useEffect(() => {
+        const getLoggedIn = async () => {
+            checkLoggedIn().then((response) => {
+                dispatch({ type: 'SET_IS_LOGGED_IN', payload: response});
+            })
+            .catch((err) => {
+                console.error("There was an issue fetching your data.");
+            })
+        }
+        getLoggedIn();
+    }, []);
+  
   
     return (
       <AppStateContext.Provider value={{ state, dispatch }}>

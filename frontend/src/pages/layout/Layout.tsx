@@ -112,7 +112,7 @@ const Layout = () => {
             setErrorNewEmail(undefined)
             setErrorNewPassword(undefined)
             setErrorNewPasswordConfirm(undefined)
-            alert("ok");
+            location.reload()
         }
     }
 
@@ -180,7 +180,12 @@ const Layout = () => {
                                 <HistoryButton onClick={handleHistoryClick} text={appStateContext?.state?.isChatHistoryOpen ? hideHistoryLabel : showHistoryLabel} />
                             }
                             <ShareButton onClick={handleShareClick} text={shareLabel} />
-                            <LoginButton onClick={handleLoginClick} text={loginLabel}/>
+                            {(appStateContext?.state.isUserLoggedIn?.logged_in === false) &&
+                               <LoginButton onClick={handleLoginClick} text={loginLabel}/>
+                            }
+                            {(appStateContext?.state.isUserLoggedIn?.logged_in !== false) &&
+                               <PrimaryButton  text={appStateContext?.state.isUserLoggedIn?.email}/>
+                            }
                         </Stack>
                     }
                 </Stack>
