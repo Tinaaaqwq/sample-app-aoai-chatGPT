@@ -18,14 +18,13 @@ from quart import (
 from quart_auth import QuartAuth, AuthUser, login_user, logout_user,current_user
 from quart_session import Session
 from verify_email import verify_email_async
-# import motorc
 
 from openai import AsyncAzureOpenAI
 from azure.identity.aio import DefaultAzureCredential, get_bearer_token_provider
 from backend.auth.auth_utils import get_authenticated_user_details
 from backend.history.cosmosdbservice import CosmosConversationClient
 from backend.auth.cosmosdbservice import CosmosLoginClient
-from backend.auth.email_user import EmailUser
+# from backend.auth.email_user import EmailUser
 
 from backend.utils import format_as_ndjson, format_stream_response, generateFilterString, parse_multi_columns, format_non_streaming_response
 
@@ -44,7 +43,7 @@ SESSION_URI = os.environ.get("SESSION_URI")
 # auth_manager = QuartAuth()
 
 #Set a global variable for user
-email_user = EmailUser("", False)
+# email_user = EmailUser("", False)
 
 def create_app(SESSION_URI):
     app = Quart(__name__)
@@ -1016,6 +1015,7 @@ async def user_signup():
             # Login the user
             # session['user'] = 'test'
             session['user'] = user_id
+            session['login'] = True
             # test_session = session.get('user', 'not set')
             return jsonify({
                 "message": f"Successfully signed up user with email {email}",

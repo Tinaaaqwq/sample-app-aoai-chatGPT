@@ -33,7 +33,7 @@ export const HistoryButton: React.FC<ButtonProps> = ({ onClick, text }) => {
 export const LoginButton: React.FC<ButtonProps> = ({onClick, text}) => {
     return (
       <CommandBarButton
-              className={styles.shareButtonRoot}
+              className={styles.loginButtonRoot}
               iconProps={{ iconName: 'Contact' }}
               onClick={onClick}
               text={text}
