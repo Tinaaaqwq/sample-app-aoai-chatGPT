@@ -1006,14 +1006,13 @@ async def user_signup():
         
         email_verified = await verify_email_async(email)
         if not email_verified:
-            return jsonify({"error": "email is not valid"}), 400
+            return jsonify({"error": "Email is not valid"}), 400
         
         ##sign up the user in cosmos
         signed_user, user_id = await cosmos_login_client.signup_user(email,password)
         await cosmos_login_client.cosmosdb_client.close()
         if signed_user:
             # Login the user
-            # session['user'] = 'test'
             session['user'] = user_id
             session['login'] = True
             # test_session = session.get('user', 'not set')
@@ -1023,7 +1022,7 @@ async def user_signup():
                             }), 200
         else:
             if user_id == "user already existed":
-                return jsonify({"error": "user already existed"}), 400
+                return jsonify({"error": "User already existed"}), 400
             else:
                 return jsonify({"error": f"Unable to sign up user with email {email}. It either does not exist or the user does not have access to it."}), 404
     except Exception as e:
