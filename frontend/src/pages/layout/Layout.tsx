@@ -185,7 +185,7 @@ const Layout = () => {
                     showCloseButton: true
                 }}
             >
-                <Stack horizontal verticalAlign="center" style={{ gap: "8px" }}>
+               <Stack horizontal verticalAlign="center" style={{ gap: "8px" }}>
                     <form onSubmit={(e) => handleRegister(e)}>
                     <label >Email</label>
                     <TextField 
@@ -202,7 +202,11 @@ const Layout = () => {
                         value={newUserPassword}
                         onChange = {newUserPasswordOnChange}
                     />
-                    <PrimaryButton text="Submit" onClick={(e) => handleRegister(e)} />
+                    <br />
+                    <PrimaryButton text="Log In" onClick={(e) => handleRegister(e)} />
+                    <br />
+                    <br />
+                    <PrimaryButton className={styles.createButton} text="Create an account" onClick={(e) => handleRegister(e)} />
                     </form>
                 </Stack>
                 

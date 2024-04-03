@@ -121,3 +121,8 @@
         margin-left: 26px;
     }
 }
+
+.createButton {
+    background: #FFFFFF;
+    color: #424242;
+}
