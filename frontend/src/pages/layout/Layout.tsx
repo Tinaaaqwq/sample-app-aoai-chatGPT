@@ -146,7 +146,7 @@ const Layout = () => {
             return
         }
         else if(newUserPassword != newUserPasswordConfirm){
-            setErrorNewPassword("Error: Passwords do not match.")
+            // setErrorNewPassword("Error: Passwords do not match.")
             setErrorNewPasswordConfirm("Error: Passwords do not match.")
             return
         }

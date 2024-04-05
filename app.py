@@ -651,8 +651,11 @@ def get_frontend_settings():
 ## Conversation History API ## 
 @bp.route("/history/generate", methods=["POST"])
 async def add_conversation():
-    authenticated_user = get_authenticated_user_details(request_headers=request.headers)
-    user_id = authenticated_user['user_principal_id']
+    if session['login'] == True:
+        user_id = session['user_id']
+    else:
+        authenticated_user = get_authenticated_user_details(request_headers=request.headers)
+        user_id = authenticated_user['user_principal_id']
 
     ## check request for conversation_id
     request_json = await request.get_json()
@@ -703,8 +706,11 @@ async def add_conversation():
 
 @bp.route("/history/update", methods=["POST"])
 async def update_conversation():
-    authenticated_user = get_authenticated_user_details(request_headers=request.headers)
-    user_id = authenticated_user['user_principal_id']
+    if session['login'] == True:
+        user_id = session['user_id']
+    else:
+        authenticated_user = get_authenticated_user_details(request_headers=request.headers)
+        user_id = authenticated_user['user_principal_id']
 
     ## check request for conversation_id
     request_json = await request.get_json()
@@ -753,8 +759,12 @@ async def update_conversation():
 
 @bp.route("/history/message_feedback", methods=["POST"])
 async def update_message():
-    authenticated_user = get_authenticated_user_details(request_headers=request.headers)
-    user_id = authenticated_user['user_principal_id']
+    if session['login'] == True:
+        user_id = session['user_id']
+    else:
+        authenticated_user = get_authenticated_user_details(request_headers=request.headers)
+        user_id = authenticated_user['user_principal_id']
+
     cosmos_conversation_client = init_cosmosdb_client()
 
     ## check request for message_id
@@ -782,9 +792,12 @@ async def update_message():
 
 @bp.route("/history/delete", methods=["DELETE"])
 async def delete_conversation():
-    ## get the user id from the request headers
-    authenticated_user = get_authenticated_user_details(request_headers=request.headers)
-    user_id = authenticated_user['user_principal_id']
+    if session['login'] == True:
+        user_id = session['user_id']
+    else:
+        ## get the user id from the request headers
+        authenticated_user = get_authenticated_user_details(request_headers=request.headers)
+        user_id = authenticated_user['user_principal_id']
     
     ## check request for conversation_id
     request_json = await request.get_json()
@@ -816,8 +829,12 @@ async def delete_conversation():
 @bp.route("/history/list", methods=["GET"])
 async def list_conversations():
     offset = request.args.get("offset", 0)
-    authenticated_user = get_authenticated_user_details(request_headers=request.headers)
-    user_id = authenticated_user['user_principal_id']
+
+    if session['login'] == True:
+        user_id = session['user_id']
+    else:
+        authenticated_user = get_authenticated_user_details(request_headers=request.headers)
+        user_id = authenticated_user['user_principal_id']
 
     ## make sure cosmos is configured
     cosmos_conversation_client = init_cosmosdb_client()
@@ -837,8 +854,11 @@ async def list_conversations():
 
 @bp.route("/history/read", methods=["POST"])
 async def get_conversation():
-    authenticated_user = get_authenticated_user_details(request_headers=request.headers)
-    user_id = authenticated_user['user_principal_id']
+    if session['login'] == True:
+        user_id = session['user_id']
+    else:
+        authenticated_user = get_authenticated_user_details(request_headers=request.headers)
+        user_id = authenticated_user['user_principal_id']
 
     ## check request for conversation_id
     request_json = await request.get_json()
@@ -869,8 +889,11 @@ async def get_conversation():
 
 @bp.route("/history/rename", methods=["POST"])
 async def rename_conversation():
-    authenticated_user = get_authenticated_user_details(request_headers=request.headers)
-    user_id = authenticated_user['user_principal_id']
+    if session['login'] == True:
+        user_id = session['user_id']
+    else:
+        authenticated_user = get_authenticated_user_details(request_headers=request.headers)
+        user_id = authenticated_user['user_principal_id']
 
     ## check request for conversation_id
     request_json = await request.get_json()
@@ -901,9 +924,12 @@ async def rename_conversation():
 
 @bp.route("/history/delete_all", methods=["DELETE"])
 async def delete_all_conversations():
-    ## get the user id from the request headers
-    authenticated_user = get_authenticated_user_details(request_headers=request.headers)
-    user_id = authenticated_user['user_principal_id']
+    if session['login'] == True:
+        user_id = session['user_id']
+    else:
+        ## get the user id from the request headers
+        authenticated_user = get_authenticated_user_details(request_headers=request.headers)
+        user_id = authenticated_user['user_principal_id']
 
     # get conversations for user
     try:
@@ -932,9 +958,12 @@ async def delete_all_conversations():
 
 @bp.route("/history/clear", methods=["POST"])
 async def clear_messages():
-    ## get the user id from the request headers
-    authenticated_user = get_authenticated_user_details(request_headers=request.headers)
-    user_id = authenticated_user['user_principal_id']
+    if session['login'] == True:
+        user_id = session['user_id']
+    else:
+        ## get the user id from the request headers
+        authenticated_user = get_authenticated_user_details(request_headers=request.headers)
+        user_id = authenticated_user['user_principal_id']
     
     ## check request for conversation_id
     request_json = await request.get_json()
