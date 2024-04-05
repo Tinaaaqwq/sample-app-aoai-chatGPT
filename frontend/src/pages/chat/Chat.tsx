@@ -41,6 +41,7 @@ const enum messageStatus {
     Done = "Done"
 }
 
+
 const Chat = () => {
     const appStateContext = useContext(AppStateContext)
     const ui = appStateContext?.state.frontendSettings?.ui;
