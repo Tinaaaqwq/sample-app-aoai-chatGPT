@@ -366,6 +366,32 @@ export const userSignup= async (email: string, password: string) : Promise<Respo
     return response;
 }
 
+export const userLogIn= async (email: string, password: string) : Promise<Response> => {
+    const response = await fetch("/user/login", {
+        method: "POST",
+        body: JSON.stringify({
+            email: email,
+            password: password
+        }),
+        headers: {
+            "Content-Type": "application/json"
+        },
+    })
+    .then((res) => {
+        return res
+    })
+    .catch((err) => {
+        console.error("There was an issue fetching your data.");
+        let errRes: Response = {
+            ...new Response,
+            ok: false,
+            status: 500,
+        }
+        return errRes;
+    })
+    return response;
+}
+
 export const checkLoggedIn = async (): Promise<EmailUser> => {
     const response = await fetch("/user/check", {
         method: "GET",
@@ -390,6 +416,30 @@ export const checkLoggedIn = async (): Promise<EmailUser> => {
             logged_in: false,
             email: ""
         }
+    })
+    return response;
+}
+
+export const userLogOut= async () : Promise<Response> => {
+    const response = await fetch("/user/logout", {
+        method: "POST",
+        body: JSON.stringify({
+        }),
+        headers: {
+            "Content-Type": "application/json"
+        },
+    })
+    .then((res) => {
+        return res
+    })
+    .catch((err) => {
+        console.error("There was an issue fetching your data.");
+        let errRes: Response = {
+            ...new Response,
+            ok: false,
+            status: 500,
+        }
+        return errRes;
     })
     return response;
 }

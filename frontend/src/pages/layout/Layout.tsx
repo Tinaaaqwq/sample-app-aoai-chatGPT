@@ -2,11 +2,11 @@ import { Outlet, Link } from "react-router-dom";
 import styles from "./Layout.module.css";
 import Contoso from "../../assets/Contoso.svg";
 import { CopyRegular } from "@fluentui/react-icons";
-import { Dialog, Stack, TextField, PrimaryButton, Text} from "@fluentui/react";
+import { Dialog, Stack, TextField, PrimaryButton, Text, StackItem} from "@fluentui/react";
 import { useContext, useEffect, useState } from "react";
-import { HistoryButton, ShareButton, LoginButton } from "../../components/common/Button";
+import { HistoryButton, ShareButton, LoginButton, UserButton } from "../../components/common/Button";
 import { AppStateContext } from "../../state/AppProvider";
-import { CosmosDBStatus, userSignup } from "../../api";
+import { CosmosDBStatus, userSignup, userLogOut, userLogIn } from "../../api";
 import * as CryptoJS from 'crypto-js';
 
 const Layout = () => {
@@ -22,6 +22,10 @@ const Layout = () => {
     //login variable
     const [isLoginPanelOpen, setIsLoginPanelOpen] = useState<boolean>(false);
     const [loginLabel, setloginLabel] = useState<string | undefined>("Log In");
+    const [userEmail, setUserEmail] = useState("");
+    const [userPassword, setUserPassword] = useState("");
+    const [errorUserEmail, setErrorUserEmail] = useState<string | undefined>(undefined);
+    const [errorUserPassword, setErrorUserPassword] = useState<string | undefined>(undefined);
 
     //register vairable
     const [isRegisterPanelOpen, setIsRegisterPanelOpen] = useState<boolean>(false);
@@ -32,6 +36,8 @@ const Layout = () => {
     const [errorNewPassword, setErrorNewPassword] = useState<string | undefined>(undefined);
     const [errorNewPasswordConfirm, setErrorNewPasswordConfirm] = useState<string | undefined>(undefined);
 
+    //logout variable
+    const [isUserPanelOpen, setIsUserPanelOpen] = useState<boolean>(false);
 
     const handleShareClick = () => {
         setIsSharePanelOpen(true);
@@ -58,8 +64,55 @@ const Layout = () => {
     };
 
     const handleLoginPanelDismiss = () => {
+        setErrorUserEmail(undefined)
+        setErrorUserPassword(undefined)
+        setUserEmail("");
+        setUserPassword("");
         setIsLoginPanelOpen(false);
     };
+
+    const handleLogin = async (e: any) => {
+        e.preventDefault();
+
+        if(userEmail == ""){
+            setErrorUserEmail("Error: Email is required.")
+            return
+        }
+        else if(userPassword == ""){
+            setErrorUserPassword("Error: Password is required.")
+            return
+        }
+       
+        let response = await userLogIn(userEmail, userPassword);
+        if(!response.ok){
+            let response_parsed = await response.text().then((text)=>{
+                if(JSON.parse(text).error == "User doesn't existed"){
+                    setErrorUserEmail("Error: User doesn't existed")
+                }else if(JSON.parse(text).error == "Wrong password"){
+                    setErrorUserPassword("Error: Wrong password")
+                }
+                else{
+                    setErrorUserEmail("Error: " + JSON.parse(text).error)
+                }
+                
+            })
+
+        }else{
+            setErrorUserEmail(undefined)
+            setErrorUserPassword(undefined)
+            location.reload()
+        }
+    }
+    const userEmailOnChange = (e: any) => {
+        setErrorUserEmail(undefined);
+        setUserEmail(e.target.value);
+    };
+
+    const userPasswordOnChange = (e: any) => {
+        setErrorUserPassword(undefined);
+        setUserPassword(e.target.value);
+    };
+
 
     // register starts here
     const handleRegisterClick = () => {
@@ -131,6 +184,27 @@ const Layout = () => {
         setNewUserPasswordConfirm(e.target.value);
     };
 
+    //user starts here
+    const handleUserClick = () => {
+        setIsUserPanelOpen(true);
+    };
+
+    const handleUserPanelDismiss = () => {
+        setIsUserPanelOpen(false);
+    };
+
+    const handleLogOut = async (e: any) => {
+        e.preventDefault();
+
+        let response = await userLogOut();
+        if(!response.ok){
+           alert("Something wrong. Please try again.")
+        }else{
+            location.reload()
+        }
+
+    };
+
     useEffect(() => {
         if (copyClicked) {
             setCopyText("Copied URL");
@@ -184,7 +258,7 @@ const Layout = () => {
                                <LoginButton onClick={handleLoginClick} text={loginLabel}/>
                             }
                             {(appStateContext?.state.isUserLoggedIn?.logged_in !== false) &&
-                               <PrimaryButton  text={appStateContext?.state.isUserLoggedIn?.email}/>
+                               <UserButton onClick={handleUserClick}  text={appStateContext?.state.isUserLoggedIn?.email}/>
                             }
                         </Stack>
                     }
@@ -230,6 +304,40 @@ const Layout = () => {
                 </Stack>
             </Dialog>
             <Dialog
+                onDismiss={handleUserPanelDismiss}
+                hidden={!isUserPanelOpen}
+                styles={{
+
+                    main: [{
+                        selectors: {
+                            ['@media (min-width: 480px)']: {
+                                maxWidth: '600px',
+                                background: "#FFFFFF",
+                                boxShadow: "0px 14px 28.8px rgba(0, 0, 0, 0.24), 0px 0px 8px rgba(0, 0, 0, 0.2)",
+                                borderRadius: "8px",
+                                maxHeight: '200px',
+                                minHeight: '100px',
+                            }
+                        }
+                    }]
+                }}
+                dialogContentProps={{
+                    title: "User Profile",
+                    showCloseButton: true
+                }}
+            >
+                <Stack horizontalAlign='center' style={{ gap: "10px" }} >
+                    <StackItem>
+                        <Text style={{ alignSelf: 'center', fontWeight: '400', fontSize: 16 }}>
+                        <span> User Email: {appStateContext?.state.isUserLoggedIn?.email}</span>
+                        </Text>
+                    </StackItem>
+
+                    <StackItem><PrimaryButton text="Log Out" onClick={(e) => handleLogOut(e)}/> </StackItem>
+                    
+                </Stack>
+            </Dialog>
+            <Dialog
                 onDismiss={handleLoginPanelDismiss}
                 hidden={!isLoginPanelOpen}
                 styles={{
@@ -253,15 +361,18 @@ const Layout = () => {
                 }}
             >
                 <Stack horizontal verticalAlign="center" style={{ gap: "8px" }}>
-                    <form onSubmit={(e) => handleRegister(e)}>
+                    <form onSubmit={(e) => handleLogin(e)}>
                     <div>
                         <label >Email</label>
                         <TextField 
                             className={styles.urlTextBox} 
                             name="email" 
-                            value={newUserEmail}
-                            onChange={newUserEmailOnChange}
+                            value={userEmail}
+                            onChange={ userEmailOnChange }
                         /> 
+                        {errorUserEmail && (
+                            <Text role='alert' aria-label={errorUserEmail} style={{fontSize: 12, fontWeight: 400, color: 'rgb(164,38,44)'}}>{errorUserEmail}</Text>
+                        )}
                     </div>
                    
 
@@ -271,13 +382,16 @@ const Layout = () => {
                             className={styles.urlTextBox} 
                             name="password" 
                             type='password'
-                            value={newUserPassword}
-                            onChange = {newUserPasswordOnChange}
+                            value={userPassword}
+                            onChange = {userPasswordOnChange}
                         />
+                        {errorUserPassword && (
+                            <Text role='alert' aria-label={errorUserPassword} style={{fontSize: 12, fontWeight: 400, color: 'rgb(164,38,44)'}}>{errorUserPassword}</Text>
+                        )}
                     </div>
                     
                     <br></br>
-                    <PrimaryButton text="Log In" onClick={(e) => handleRegister(e)} />
+                    <PrimaryButton text="Log In" onClick={(e) => handleLogin(e)} />
                     <br />
                     <br />
                     <PrimaryButton className={styles.createButton} text="Create an account" onClick={handleRegisterClick} />

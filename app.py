@@ -1033,10 +1033,43 @@ async def user_signup():
 
 @bp.route("/user/login", methods=["POST"])
 async def user_login():
+    cosmos_login_client = init_login_client()
+    if not cosmos_login_client:
+        raise Exception("CosmosDB is not configured or not working")
 
+    ## check request for message_id
+    request_json = await request.get_json()
+    email = request_json.get('email', None)
+    password = request_json.get("password", None)
+    #signed_user, user_id = await cosmos_login_client.signup_user(email,password)
+    try: 
 
+        loggedin_user, user_id = await cosmos_login_client.login_user(email,password)
+        await cosmos_login_client.cosmosdb_client.close()
+        if loggedin_user:
+            # Login the user
+            session['login'] = True
+            session['user_id'] = user_id
+            session['user_email'] = email
+            # test_session = session.get('user', 'not set')
+            return jsonify({"message": f"Successfully logged up user with email {email}"}), 200
+        else:
+            if user_id == "user doesn't existed":
+                return jsonify({"error": "User doesn't existed"}), 400
+            elif user_id == "wrong password":
+                return jsonify({"error": "Wrong password"}), 400
+            else:
+                return jsonify({"error": f"Unable to log in user with email {email}. It either does not exist or the user does not have access to it."}), 404
+    except Exception as e:
+        logging.exception("Exception in user/login")
+        return jsonify({"error": str(e)}), 500
 
-    return True
+@bp.route("/user/logout", methods=["POST"])
+async def user_logout():
+    session['login'] = False
+    session['user_email'] = ""
+    session['user_id'] = ""
+    return jsonify({"message": f"Successfully logged out user"}), 200
 
 @bp.route("/user/check", methods=["GET"])
 async def user_check():

@@ -40,3 +40,14 @@ export const LoginButton: React.FC<ButtonProps> = ({onClick, text}) => {
       />
     )
 }
+
+export const UserButton: React.FC<ButtonProps> = ({onClick, text}) => {
+  return (
+    <CommandBarButton
+            className={styles.userButtonRoot}
+            iconProps={{ iconName: 'Contact' }}
+            onClick={onClick}
+            text={text}
+    />
+  )
+}

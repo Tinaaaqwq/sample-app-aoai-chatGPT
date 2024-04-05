@@ -29,14 +29,14 @@ class CosmosLoginClient():
         except exceptions.CosmosResourceNotFoundError:
             raise ValueError("Invalid CosmosDB container name") 
         
-    async def get_user(self, user_id):
+    async def get_user(self, email):
         parameters = [
             {
-                'name': '@userId',
-                'value': user_id
+                'name': '@email',
+                'value': email
             }
         ]
-        query = f"SELECT * FROM c where c.userId = @userId"
+        query = f"SELECT * FROM c where c.email = @email"
         users = []
         async for item in self.container_client.query_items(query=query, parameters=parameters):
             users.append(item)
@@ -48,11 +48,12 @@ class CosmosLoginClient():
             return users[0]
     
     async def signup_user(self, email, password):
-        user_id = str(uuid.uuid3(uuid.NAMESPACE_DNS, email))
-        exist = await self.get_user(user_id)
+        exist = await self.get_user(email)
+       
         if exist != None:
             return False, "user already existed"
-
+        
+        user_id = str(uuid.uuid3(uuid.NAMESPACE_DNS, email))
         user = {
             'id': str(uuid.uuid4()),  
             'type': 'user',
@@ -66,6 +67,20 @@ class CosmosLoginClient():
         resp = await self.container_client.upsert_item(user)  
         if resp:
             return resp, user_id
+        else:
+            return False, ""
+    
+        
+    async def login_user(self, email, password): 
+        exist_user = await self.get_user(email)
+        
+        if exist_user == None:
+            return False, "user doesn't existed"
+        
+        if password == exist_user['password']:
+            return True, exist_user['userId']
+        elif password != exist_user['password']:
+            return False, "wrong password"
         else:
             return False, ""
         
