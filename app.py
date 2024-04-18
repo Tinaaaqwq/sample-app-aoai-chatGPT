@@ -13,7 +13,8 @@ from quart import (
     request,
     send_from_directory,
     render_template,
-    session
+    session,
+    redirect
 )
 from quart_auth import QuartAuth, AuthUser, login_user, logout_user,current_user
 from quart_session import Session
@@ -61,7 +62,15 @@ def create_app(SESSION_URI):
 
 @bp.route("/")
 async def index():
-    return await render_template("index.html", title=UI_TITLE, favicon=UI_FAVICON)
+    if session.get('login', False) == True:
+        return await render_template("index.html", title=UI_TITLE, favicon=UI_FAVICON)
+    else:
+        return redirect("/login")
+
+
+@bp.route("/login")
+async def login_index():
+    return await render_template("src/pages/login/index.html", title='Log In', favicon=UI_FAVICON)
 
 @bp.route("/pizza.ico")
 async def favicon():
